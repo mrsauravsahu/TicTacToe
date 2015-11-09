@@ -56,6 +56,7 @@ void Input(cell grid[][COLUMNSIZE], char symbol)
 		}
 	} while (IsValid(grid, position) == false);
 }
+
 int main()
 {
 	cell grid[3][3];
