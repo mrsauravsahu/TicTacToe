@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 
 #define ROWSIZE 3
 #define COLUMNSIZE 3
@@ -15,10 +15,10 @@ enum Bool
 	false,
 	true
 };
-enum character
+enum Character
 {
-	X,
-	O
+	X=88,
+	O=79
 };
 struct Cell
 {
@@ -27,6 +27,7 @@ struct Cell
 	enum character character;
 };
 typedef enum Bool bool;
+typedef enum Character character;
 typedef struct Cell cell;
 
 //Function Prototypes
@@ -50,6 +51,7 @@ int main()
 	//Game Logic
 	do
 	{
+		Initialize(grid, ROWSIZE, COLUMNSIZE);
 		count = 0;
 		ReadUserName(user1, 1);
 		ReadUserName(user2, 2);
@@ -72,6 +74,10 @@ int main()
 			Display(grid, 'P');
 			Input(grid, count);
 			Display(grid, 'M');
+			/*if(IsGameOver(grid) == true)
+			{
+				
+			}*/
 			++count;
 		}
 	} while (1);
@@ -93,6 +99,7 @@ void Initialize(cell grid[][COLUMNSIZE], int rowSize, int columnSize)
 bool IsValid(cell grid[][COLUMNSIZE], int position)
 {
 	int row, column;
+	if(position > ROWSIZE*COLUMNSIZE)return false;
 	row = (position - 1) / ROWSIZE;
 	column = (position - 1) % ROWSIZE;
 	if ((grid[row][column]).isOccupied == true)return false;
@@ -105,9 +112,17 @@ void ReadUserName(char name[], int num)
 }
 void Input(cell grid[][COLUMNSIZE], int number)
 {
-	char symbol;
-	if (number % 2 == 0)symbol = 'X';
-	else symbol = 'O';
+	char symbol; character enumSymbol;
+	if (number % 2 == 0)
+	{
+		symbol = 'X';
+		enumSymbol = X;
+	}
+	else
+	{
+		symbol = 'O';
+		enumSymbol = O;
+	}
 	int position;
 	printf("\nEnter position to draw %c: ", symbol);
 	do
@@ -118,6 +133,8 @@ void Input(cell grid[][COLUMNSIZE], int number)
 			printf("\nYou entered an invalid position. Try again: ");
 		}
 	} while (IsValid(grid, position) == false);
+	grid[(position - 1) / ROWSIZE][(position - 1) % ROWSIZE].isOccupied = true;
+	grid[(position - 1) / ROWSIZE][(position - 1) % ROWSIZE].character = enumSymbol;
 }
 void WriteLine(int rowSize)
 {
@@ -148,12 +165,13 @@ void Display(cell grid[][COLUMNSIZE], char mode)
 				}
 				else
 				{
-					printf("%c ", grid[j][i].character);
+					printf("%c ", (int)grid[i][j].character);
 				}
 			}
 		}
 		WriteLine(ROWSIZE);
 	}
+	break;
 
 	case 'P':
 	{
@@ -179,19 +197,59 @@ void Display(cell grid[][COLUMNSIZE], char mode)
 }
 int Toss()
 {
-	srand(time());
+	srand(time(NULL));
 	return (rand() % 2);
 }
-bool Check(cell grid[][COLUMNSIZE])
+bool IsGameOver(cell grid[][COLUMNSIZE])
 {
 	int i, j;
+	int *rows = malloc(sizeof(int)*ROWSIZE);
+	int *columns = malloc(sizeof(int)*COLUMNSIZE);
+	int *diag = malloc(sizeof(int)*2);
 	for (i = 0; i < ROWSIZE; ++i)
 	{
+		rows[i] = columns[i] = 0;
 		for (j = 0; j < COLUMNSIZE; ++j)
 		{
-			//TODO
+			if (grid[i][j].isOccupied == true && grid[i][j].character == X)
+			{
+				rows[i]++;
+				columns[j]++;
+			}
+			else if (grid[i][j].isOccupied == true && grid[i][j].character == O)
+			{
+				rows[i]--;
+				columns[j]--;
+			}
 		}
 	}
+	for (i = 0; i < ROWSIZE; i++)
+	{
+		if (grid[i][j].isOccupied == true && grid[i][i].character == X)
+		{
+			diag[0]++;
+		}
+		else if (grid[i][j].isOccupied == true && grid[i][i].character == O)
+		{
+			diag[0]--;
+		}
+	}
+	for (i = 0; i < ROWSIZE; i++)
+	{
+		if (grid[i][ROWSIZE-i-1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == X)
+		{
+			diag[1]++;
+		}
+		else if (grid[i][ROWSIZE - i - 1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == O)
+		{
+			diag[1]--;
+		}
+	}
+	return false;
+}
+bool CheckHelperMethod(int array[])
+{
+	return true;
 }
 bool AreAllSame(cell array[], int size)
 {
