@@ -45,7 +45,7 @@ int main()
 {
 	//Variable Declaration
 	cell grid[3][3];
-	char user1[40], user2[40], temp[40];
+	char user1[40], user2[40], temp[40], playAgain;
 	int firstUser, count, isItOver;
 	//Game Logic
 	while (1)
@@ -65,27 +65,41 @@ int main()
 			strcpy(user2, temp);
 		}
 		printf("\nPLAYERS");
-		printf("\nPlayer 1: %s", user1);
-		printf("\nPlayer 2: %s", user2);
+		printf("\nPlayer 1: %s: Assigned piece: X", user1);
+		printf("\nPlayer 2: %s: Assigned piece: O", user2);
 
 		while (count < (ROWSIZE*COLUMNSIZE))
 		{
 			Display(grid, 'P');
 			Input(grid, count);
 			Display(grid, 'M');
-			isItOver = IsGameOver(grid);
-			if (isItOver != -1)
+			if (count >= 4)
 			{
-				if (isItOver == 79)
-					strcpy(user1, user2);
-				printf("\n%s won! Congratulations!!", user1);
-				break;
+				isItOver = IsGameOver(grid);
+				if (isItOver != -1)
+				{
+					if (isItOver == 79)
+						strcpy(user1, user2);
+					printf("\n%s won! Congratulations!!", user1);
+					break;
+				}
 			}
 			++count;
 		}
 		if (count == 8)
 		{
 			printf("\nIt's a draw. Well played, both of you!");
+		}
+		printf("\nDo you want to start a new game? (y/n): ");
+		scanf("%c", &playAgain);
+		if (playAgain == 'Y' || playAgain == 'y')
+		{
+			system("cls");
+			continue;
+		}
+		else
+		{
+			break;
 		}
 	}
 }
@@ -207,13 +221,25 @@ int Toss()
 	srand((int)time(NULL));
 	return (rand() % 2);
 }
+void InitializeTheArray(int a[], int size, int num)
+{
+	int i;
+	for (i = 0; i < size; i++)
+	{
+		a[i] = num;
+	}
+}
 int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
 {
 	int i, j;
 	bool flag = false;
-	int *rows = malloc(sizeof(int)*ROWSIZE);
-	int *columns = malloc(sizeof(int)*COLUMNSIZE);
-	int *diag = malloc(sizeof(int)*2);
+	int rows[ROWSIZE];
+	int columns[COLUMNSIZE];
+	int diag[2];
+
+	InitializeTheArray(rows, ROWSIZE, 0);
+	InitializeTheArray(columns, COLUMNSIZE, 0);
+	InitializeTheArray(diag, 2, 0);
 	for (i = 0; i < ROWSIZE; ++i)
 	{
 		rows[i] = columns[i] = 0;
@@ -233,11 +259,11 @@ int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
 	}
 	for (i = 0; i < ROWSIZE; i++)
 	{
-		if (grid[i][j].isOccupied == true && grid[i][i].character == X)
+		if (grid[i][i].isOccupied == true && grid[i][i].character == X)
 		{
 			diag[0]++;
 		}
-		else if (grid[i][j].isOccupied == true && grid[i][i].character == O)
+		if (grid[i][i].isOccupied == true && grid[i][i].character == O)
 		{
 			diag[0]--;
 		}
@@ -248,7 +274,7 @@ int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
 		{
 			diag[1]++;
 		}
-		else if (grid[i][ROWSIZE - i - 1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == O)
+		if (grid[i][ROWSIZE - i - 1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == O)
 		{
 			diag[1]--;
 		}
