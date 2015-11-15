@@ -31,14 +31,14 @@ typedef enum Character character;
 typedef struct Cell cell;
 
 //Function Prototypes
-void Initialize(cell *[], int, int);
-bool IsValid(cell *[], int);
+void Initialize(cell [][COLUMNSIZE], int, int);
+bool IsValid(cell[][COLUMNSIZE], int);
 void ReadUserName(char[], int);
-void Input(cell *[], int);
+void Input(cell[][COLUMNSIZE], int);
 void WriteLine(int);
-void Display(cell *[], char);
+void Display(cell[][COLUMNSIZE], char);
 int Toss();
-bool AreAllSame(cell [], int);
+int IsGameOver(cell[][COLUMNSIZE]);
 
 //The main Function
 int main()
@@ -46,10 +46,9 @@ int main()
 	//Variable Declaration
 	cell grid[3][3];
 	char user1[40], user2[40], temp[40];
-	int firstUser, count;
-
+	int firstUser, count, isItOver;
 	//Game Logic
-	do
+	while (1)
 	{
 		Initialize(grid, ROWSIZE, COLUMNSIZE);
 		count = 0;
@@ -74,17 +73,25 @@ int main()
 			Display(grid, 'P');
 			Input(grid, count);
 			Display(grid, 'M');
-			/*if(IsGameOver(grid) == true)
+			isItOver = IsGameOver(grid);
+			if (isItOver != -1)
 			{
-				
-			}*/
+				if (isItOver == 79)
+					strcpy(user1, user2);
+				printf("\n%s won! Congratulations!!", user1);
+				break;
+			}
 			++count;
 		}
-	} while (1);
+		if (count == 8)
+		{
+			printf("\nIt's a draw. Well played, both of you!");
+		}
+	}
 }
 
 //Function Definition
-void Initialize(cell grid[][COLUMNSIZE], int rowSize, int columnSize)
+void Initialize(cell grid[ROWSIZE][COLUMNSIZE], int rowSize, int columnSize)
 {
 	int i, j;
 	for (i = 0; i < rowSize; i++)
@@ -96,7 +103,7 @@ void Initialize(cell grid[][COLUMNSIZE], int rowSize, int columnSize)
 		}
 	}
 }
-bool IsValid(cell grid[][COLUMNSIZE], int position)
+bool IsValid(cell grid[ROWSIZE][COLUMNSIZE], int position)
 {
 	int row, column;
 	if(position > ROWSIZE*COLUMNSIZE)return false;
@@ -108,9 +115,9 @@ bool IsValid(cell grid[][COLUMNSIZE], int position)
 void ReadUserName(char name[], int num)
 {
 	printf("\nEnter player name %d: ", num);
-	gets(name);
+	scanf("%s", name);
 }
-void Input(cell grid[][COLUMNSIZE], int number)
+void Input(cell grid[ROWSIZE][COLUMNSIZE], int number)
 {
 	char symbol; character enumSymbol;
 	if (number % 2 == 0)
@@ -146,7 +153,7 @@ void WriteLine(int rowSize)
 		else printf(" ");
 	}
 }
-void Display(cell grid[][COLUMNSIZE], char mode)
+void Display(cell grid[ROWSIZE][COLUMNSIZE], char mode)
 {
 	int i, j;
 	switch (mode)
@@ -197,12 +204,13 @@ void Display(cell grid[][COLUMNSIZE], char mode)
 }
 int Toss()
 {
-	srand(time(NULL));
+	srand((int)time(NULL));
 	return (rand() % 2);
 }
-bool IsGameOver(cell grid[][COLUMNSIZE])
+int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
 {
 	int i, j;
+	bool flag = false;
 	int *rows = malloc(sizeof(int)*ROWSIZE);
 	int *columns = malloc(sizeof(int)*COLUMNSIZE);
 	int *diag = malloc(sizeof(int)*2);
@@ -216,7 +224,7 @@ bool IsGameOver(cell grid[][COLUMNSIZE])
 				rows[i]++;
 				columns[j]++;
 			}
-			else if (grid[i][j].isOccupied == true && grid[i][j].character == O)
+			if (grid[i][j].isOccupied == true && grid[i][j].character == O)
 			{
 				rows[i]--;
 				columns[j]--;
@@ -236,7 +244,7 @@ bool IsGameOver(cell grid[][COLUMNSIZE])
 	}
 	for (i = 0; i < ROWSIZE; i++)
 	{
-		if (grid[i][ROWSIZE-i-1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == X)
+		if (grid[i][ROWSIZE - i - 1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == X)
 		{
 			diag[1]++;
 		}
@@ -245,21 +253,16 @@ bool IsGameOver(cell grid[][COLUMNSIZE])
 			diag[1]--;
 		}
 	}
-	return false;
-}
-bool CheckHelperMethod(int array[])
-{
-	return true;
-}
-bool AreAllSame(cell array[], int size)
-{
-	int i;
-	for (i = 0; i < size - 1; ++i)
+	
+	for (i = 0; i < ROWSIZE; i++)
 	{
-		if (array[i].isOccupied == false
-			|| array[i+1].isOccupied == true
-			|| array[i+1].character!= array[i + 1].character)
-			return false;
+		if (rows[i] == 3 || columns[i] == 3)return 88;
+		if (rows[i] == -3 || columns[i] == -3)return 79;
 	}
-	return true;
+	for (i = 0; i < 2; i++)
+	{
+		if (diag[i] == 3)return 88;
+		if (diag[i] == -3)return 79;
+	}
+	return -1;
 }
