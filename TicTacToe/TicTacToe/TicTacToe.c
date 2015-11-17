@@ -6,8 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-#define ROWSIZE 3
-#define COLUMNSIZE 3
+#define SIZE 2
 
 //Data Structures
 enum Bool
@@ -31,26 +30,26 @@ typedef enum Character character;
 typedef struct Cell cell;
 
 //Function Prototypes
-void Initialize(cell [][COLUMNSIZE], int, int);
-bool IsValid(cell[][COLUMNSIZE], int);
+void Initialize(cell [SIZE][SIZE], int, int);
+bool IsValid(cell[SIZE][SIZE], int);
 void ReadUserName(char[], int);
-void Input(cell[][COLUMNSIZE], int);
+void Input(cell[SIZE][SIZE], int);
 void WriteLine(int);
-void Display(cell[][COLUMNSIZE], char);
+void Display(cell[SIZE][SIZE], char);
 int Toss();
-int IsGameOver(cell[][COLUMNSIZE]);
+int IsGameOver(cell[SIZE][SIZE]);
 
 //The main Function
 int main()
 {
 	//Variable Declaration
-	cell grid[3][3];
+	cell grid[SIZE][SIZE];
 	char user1[40], user2[40], temp[40], playAgain;
 	int firstUser, count, isItOver;
 	//Game Logic
 	while (1)
 	{
-		Initialize(grid, ROWSIZE, COLUMNSIZE);
+		Initialize(grid, SIZE, SIZE);
 		count = 0;
 		ReadUserName(user1, 1);
 		ReadUserName(user2, 2);
@@ -68,12 +67,12 @@ int main()
 		printf("\nPlayer 1: %s: Assigned piece: X", user1);
 		printf("\nPlayer 2: %s: Assigned piece: O", user2);
 
-		while (count < (ROWSIZE*COLUMNSIZE))
+		while (count < (SIZE*SIZE))
 		{
 			Display(grid, 'P');
 			Input(grid, count);
 			Display(grid, 'M');
-			if (count >= 4)
+			if (count >= (2 * SIZE - 2))
 			{
 				isItOver = IsGameOver(grid);
 				if (isItOver != -1)
@@ -86,7 +85,8 @@ int main()
 			}
 			++count;
 		}
-		if (count == 8)
+
+		if (count == SIZE*SIZE)
 		{
 			printf("\nIt's a draw. Well played, both of you!");
 		}
@@ -105,7 +105,7 @@ int main()
 }
 
 //Function Definition
-void Initialize(cell grid[ROWSIZE][COLUMNSIZE], int rowSize, int columnSize)
+void Initialize(cell grid[SIZE][SIZE], int rowSize, int columnSize)
 {
 	int i, j;
 	for (i = 0; i < rowSize; i++)
@@ -117,12 +117,12 @@ void Initialize(cell grid[ROWSIZE][COLUMNSIZE], int rowSize, int columnSize)
 		}
 	}
 }
-bool IsValid(cell grid[ROWSIZE][COLUMNSIZE], int position)
+bool IsValid(cell grid[SIZE][SIZE], int position)
 {
 	int row, column;
-	if(position > ROWSIZE*COLUMNSIZE)return false;
-	row = (position - 1) / ROWSIZE;
-	column = (position - 1) % ROWSIZE;
+	if(position > SIZE*SIZE)return false;
+	row = (position - 1) / SIZE;
+	column = (position - 1) % SIZE;
 	if ((grid[row][column]).isOccupied == true)return false;
 	return true;
 }
@@ -131,7 +131,7 @@ void ReadUserName(char name[], int num)
 	printf("\nEnter player name %d: ", num);
 	scanf("%s", name);
 }
-void Input(cell grid[ROWSIZE][COLUMNSIZE], int number)
+void Input(cell grid[SIZE][SIZE], int number)
 {
 	char symbol; character enumSymbol;
 	if (number % 2 == 0)
@@ -154,8 +154,8 @@ void Input(cell grid[ROWSIZE][COLUMNSIZE], int number)
 			printf("\nYou entered an invalid position. Try again: ");
 		}
 	} while (IsValid(grid, position) == false);
-	grid[(position - 1) / ROWSIZE][(position - 1) % ROWSIZE].isOccupied = true;
-	grid[(position - 1) / ROWSIZE][(position - 1) % ROWSIZE].character = enumSymbol;
+	grid[(position - 1) / SIZE][(position - 1) % SIZE].isOccupied = true;
+	grid[(position - 1) / SIZE][(position - 1) % SIZE].character = enumSymbol;
 }
 void WriteLine(int rowSize)
 {
@@ -167,18 +167,18 @@ void WriteLine(int rowSize)
 		else printf(" ");
 	}
 }
-void Display(cell grid[ROWSIZE][COLUMNSIZE], char mode)
+void Display(cell grid[SIZE][SIZE], char mode)
 {
 	int i, j;
 	switch (mode)
 	{
 	case 'M':
 	{
-		WriteLine(ROWSIZE);
-		for (i = 0; i < ROWSIZE; i++)
+		WriteLine(SIZE);
+		for (i = 0; i < SIZE; i++)
 		{
 			printf("\n");
-			for (j = 0; j < COLUMNSIZE; j++)
+			for (j = 0; j < SIZE; j++)
 			{
 				if (grid[i][j].isOccupied == false)
 				{
@@ -190,17 +190,17 @@ void Display(cell grid[ROWSIZE][COLUMNSIZE], char mode)
 				}
 			}
 		}
-		WriteLine(ROWSIZE);
+		WriteLine(SIZE);
 	}
 	break;
 
 	case 'P':
 	{
-		WriteLine(ROWSIZE);
-		for (i = 0; i < ROWSIZE; i++)
+		WriteLine(SIZE);
+		for (i = 0; i < SIZE; i++)
 		{
 			printf("\n");
-			for (j = 0; j < COLUMNSIZE; j++)
+			for (j = 0; j < SIZE; j++)
 			{
 				if (grid[i][j].isOccupied == false)
 				{
@@ -212,7 +212,7 @@ void Display(cell grid[ROWSIZE][COLUMNSIZE], char mode)
 				}
 			}
 		}
-		WriteLine(ROWSIZE);
+		WriteLine(SIZE);
 	}
 	}
 }
@@ -229,21 +229,20 @@ void InitializeTheArray(int a[], int size, int num)
 		a[i] = num;
 	}
 }
-int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
+int IsGameOver(cell grid[SIZE][SIZE])
 {
 	int i, j;
 	bool flag = false;
-	int rows[ROWSIZE];
-	int columns[COLUMNSIZE];
+	int rows[SIZE];
+	int columns[SIZE];
 	int diag[2];
 
-	InitializeTheArray(rows, ROWSIZE, 0);
-	InitializeTheArray(columns, COLUMNSIZE, 0);
+	InitializeTheArray(rows, SIZE, 0);
+	InitializeTheArray(columns, SIZE, 0);
 	InitializeTheArray(diag, 2, 0);
-	for (i = 0; i < ROWSIZE; ++i)
+	for (i = 0; i < SIZE; ++i)
 	{
-		rows[i] = columns[i] = 0;
-		for (j = 0; j < COLUMNSIZE; ++j)
+		for (j = 0; j < SIZE; ++j)
 		{
 			if (grid[i][j].isOccupied == true && grid[i][j].character == X)
 			{
@@ -257,7 +256,7 @@ int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
 			}
 		}
 	}
-	for (i = 0; i < ROWSIZE; i++)
+	for (i = 0; i < SIZE; i++)
 	{
 		if (grid[i][i].isOccupied == true && grid[i][i].character == X)
 		{
@@ -268,27 +267,27 @@ int IsGameOver(cell grid[ROWSIZE][COLUMNSIZE])
 			diag[0]--;
 		}
 	}
-	for (i = 0; i < ROWSIZE; i++)
+	for (i = 0; i < SIZE; i++)
 	{
-		if (grid[i][ROWSIZE - i - 1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == X)
+		if (grid[i][SIZE - i - 1].isOccupied == true && grid[i][SIZE - i - 1].character == X)
 		{
 			diag[1]++;
 		}
-		if (grid[i][ROWSIZE - i - 1].isOccupied == true && grid[i][ROWSIZE - i - 1].character == O)
+		if (grid[i][SIZE - i - 1].isOccupied == true && grid[i][SIZE - i - 1].character == O)
 		{
 			diag[1]--;
 		}
 	}
 	
-	for (i = 0; i < ROWSIZE; i++)
+	for (i = 0; i < SIZE; i++)
 	{
-		if (rows[i] == 3 || columns[i] == 3)return 88;
-		if (rows[i] == -3 || columns[i] == -3)return 79;
+		if (rows[i] == SIZE || columns[i] == SIZE)return 88;
+		if (rows[i] == -SIZE || columns[i] == -SIZE)return 79;
 	}
 	for (i = 0; i < 2; i++)
 	{
-		if (diag[i] == 3)return 88;
-		if (diag[i] == -3)return 79;
+		if (diag[i] == SIZE)return 88;
+		if (diag[i] == -SIZE)return 79;
 	}
 	return -1;
 }
