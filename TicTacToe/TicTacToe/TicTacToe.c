@@ -13,21 +13,18 @@ enum Bool
 {
 	false,
 	true
-};
+};	typedef enum Bool bool;
 enum Character
 {
 	X=88,
 	O=79
-};
+};	typedef enum Character character;
 struct Cell
 {
-	enum bool isOccupied;
+	bool isOccupied;
 	int position;
-	enum character character;
-};
-typedef enum Bool bool;
-typedef enum Character character;
-typedef struct Cell cell;
+	character character;
+};	typedef struct Cell cell;
 
 //Function Prototypes
 void Initialize(cell [SIZE][SIZE], int, int);
