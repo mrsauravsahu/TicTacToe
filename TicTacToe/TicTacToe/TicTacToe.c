@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-#define SIZE 2
+#define SIZE 3
 
 //Data Structures
 enum Bool
@@ -91,7 +91,7 @@ int main()
 			printf("\nIt's a draw. Well played, both of you!");
 		}
 		printf("\nDo you want to start a new game? (y/n): ");
-		scanf("%c", &playAgain);
+		scanf(" %c", &playAgain);
 		if (playAgain == 'Y' || playAgain == 'y')
 		{
 			system("cls");
@@ -120,7 +120,7 @@ void Initialize(cell grid[SIZE][SIZE], int rowSize, int columnSize)
 bool IsValid(cell grid[SIZE][SIZE], int position)
 {
 	int row, column;
-	if(position > SIZE*SIZE)return false;
+	if (position <= 0 || position > SIZE*SIZE)return false;
 	row = (position - 1) / SIZE;
 	column = (position - 1) % SIZE;
 	if ((grid[row][column]).isOccupied == true)return false;
@@ -134,6 +134,9 @@ void ReadUserName(char name[], int num)
 void Input(cell grid[SIZE][SIZE], int number)
 {
 	char symbol; character enumSymbol;
+	bool isValid = false;
+	char position[30];
+	int pos = 0;
 	if (number % 2 == 0)
 	{
 		symbol = 'X';
@@ -144,18 +147,22 @@ void Input(cell grid[SIZE][SIZE], int number)
 		symbol = 'O';
 		enumSymbol = O;
 	}
-	int position;
 	printf("\nEnter position to draw %c: ", symbol);
-	do
+	while (1)
 	{
-		scanf("%d", &position);
-		if (IsValid(grid, position) == false)
+		scanf(" %s", position);
+		pos = atoi(position);
+		isValid = IsValid(grid, pos - 48) || IsValid(grid, pos);
+		if (isValid == false)
 		{
-			printf("\nYou entered an invalid position. Try again: ");
+			printf("\nPlease enter a valid input. Try again: ");
+			continue;
 		}
-	} while (IsValid(grid, position) == false);
-	grid[(position - 1) / SIZE][(position - 1) % SIZE].isOccupied = true;
-	grid[(position - 1) / SIZE][(position - 1) % SIZE].character = enumSymbol;
+		break;
+	}
+	pos = IsValid(grid, pos) ? pos : pos - 48;
+	grid[(pos - 1) / SIZE][(pos - 1) % SIZE].isOccupied = true;
+	grid[(pos - 1) / SIZE][(pos - 1) % SIZE].character = enumSymbol;
 }
 void WriteLine(int rowSize)
 {
