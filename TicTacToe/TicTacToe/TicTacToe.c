@@ -35,27 +35,32 @@ void WriteLine(int);
 void Display(cell[SIZE][SIZE], char);
 int Toss();
 int IsGameOver(cell[SIZE][SIZE]);
+int next(cell grid[SIZE][SIZE]);
 
 //The main Function
 int main()
 {
 	//Variable Declaration
 	cell grid[SIZE][SIZE];
-	char user1[40], user2[40], temp[40], playAgain;
-	int firstUser, count, isItOver;
+	char user1[40], user2[40], temp[40], playAgain, symbol;
+	int firstUser, count, isItOver, position;
+	bool aiWon;
+	character enumSymbol;
 	//Game Logic
 	while (1)
 	{
 		Initialize(grid, SIZE, SIZE);
 		count = 0;
 		ReadUserName(user1, 1);
-		ReadUserName(user2, 2);
+		strcpy(user2, "AI");
 		firstUser = Toss();
 		switch (firstUser)
 		{
 		case 0: printf("%s won the toss.", user1);
+				aiWon = false;
 			break;
 		case 1: printf("%s won the toss.", user2);
+			aiWon = true;
 			strcpy(temp, user1);
 			strcpy(user1, user2);
 			strcpy(user2, temp);
@@ -66,8 +71,55 @@ int main()
 
 		while (count < (SIZE*SIZE))
 		{
+			
 			Display(grid, 'P');
-			Input(grid, count);
+			//system("cls");
+			if(aiWon ==true)
+			{
+				if(count%2 == 0)
+				{
+					position = next(grid);
+					if (count % 2 == 0)
+					{
+						symbol = 'X';
+						enumSymbol = X;
+					}
+					else
+					{
+						symbol = 'O';
+						enumSymbol = O;
+					}
+					grid[(position - 1) / SIZE][(position - 1) % SIZE].isOccupied = true;
+					grid[(position - 1) / SIZE][(position - 1) % SIZE].character = enumSymbol;
+				}
+				else
+				{
+					Input(grid, count);
+				}
+			}
+			else
+			{
+				if(count%2 == 1)
+					{
+						position = next(grid);
+						if (count % 2 == 0)
+						{
+							symbol = 'X';
+							enumSymbol = X;
+						}
+						else
+						{
+							symbol = 'O';
+							enumSymbol = O;
+						}
+						grid[(position - 1) / SIZE][(position - 1) % SIZE].isOccupied = true;
+						grid[(position - 1) / SIZE][(position - 1) % SIZE].character = enumSymbol;
+					}
+					else
+					{
+						Input(grid, count);
+					}	
+			}
 			Display(grid, 'M');
 			if (count >= (2 * SIZE - 2))
 			{
@@ -186,7 +238,7 @@ void Display(cell grid[SIZE][SIZE], char mode)
 			{
 				if (grid[i][j].isOccupied == false)
 				{
-					printf("%d ", grid[i][j].position);
+					printf("  ");
 				}
 				else
 				{
@@ -294,4 +346,13 @@ int IsGameOver(cell grid[SIZE][SIZE])
 		if (diag[i] == -SIZE)return 79;
 	}
 	return -1;
+}
+int next(cell grid[SIZE][SIZE])
+{
+	int n;
+	do
+	{
+		n = (rand() % 9) + 1;
+	}while(IsValid(grid, n)==false);
+	return n;
 }
